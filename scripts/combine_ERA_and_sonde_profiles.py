@@ -19,11 +19,12 @@ PatohPa = 1 / 100                                       # Convert from Pa to hPa
 epsilon = 0.6223                                        # Ratio of molar mass of water to dry air
 CtoK    = 273.15                                        # Celsius to Kelvin
 gtokg   = 1.e-3                                         # g/kg to kg/kg
-ghgs    = ["co2", "ch4", "n2o", "o3", "o2", "n2", "co"] # greenhouse gases
+co2     = 0.000414
+ghgs    = ["ch4", "n2o", "o3", "o2", "n2", "co"] # greenhouse gases
 Rd=287
 g=9.8
 
-def combine_sonde_and_background(all_sondes_file, background_file, ERA_dir, deltaP=100, sfc_emis=.98, sfc_alb=0.07, mu0=1., ghgs=ghgs):
+def combine_sonde_and_background(all_sondes_file, background_file, ERA_dir, deltaP=100, sfc_emis=.98, sfc_alb=0.07, mu0=1., ghgs=ghgs,co2=co2):
 
     # Background sounding
     back_tropical_atm = xr.open_dataset(background_file)
@@ -208,6 +209,9 @@ def combine_sonde_and_background(all_sondes_file, background_file, ERA_dir, delt
                 back_on_p = back_on_p.rename({'p_lay':'play'}) # Rename p_lay into play
                 for g in ghgs:
                     profile[g] = back_on_p["vmr_" + g].interp(play=play).fillna(back_tropical_atm["vmr_" + g].isel(lay=lowest))
+		
+		# set co2 manually
+                profile['co2'] = co2
 
                 back_tropical_atm.close()
                 sonde.close()

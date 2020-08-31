@@ -20,9 +20,12 @@ plt.rcParams.update({"font.size": 18})
 
 # EDIT PATH BELOW
 # dir_profile = "/Users/annaleaalbright/Dropbox/EUREC4A/RadiativeProfiles/Data/"
-dir_profile = "/Users/bfildier/Data/EUREC4A/merged/radiative_profiles"
+#dir_profile = "/Users/bfildier/Data/EUREC4A/merged/radiative_profiles"
+#path_to_rad_profiles = os.path.join(dir_profile, "rad_profiles_all_sondes_ERA.nc")
 
-path_to_rad_profiles = os.path.join(dir_profile, "rad_profiles_all_sondes_ERA.nc")
+dir_profile = "../output/rad_profiles"
+path_to_rad_profiles = os.path.join(dir_profile,"rad_profiles.nc")
+
 all_profiles = xr.open_dataset(path_to_rad_profiles)
 
 #%%

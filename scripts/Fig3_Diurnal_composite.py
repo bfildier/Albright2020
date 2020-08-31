@@ -27,8 +27,11 @@ import matplotlib.cm as cmx
 matplotlib.rcParams.update({'font.size': 24})
 
 #Directory where sondes are stored
-dir_profile = "/media/ludo/DATA/google-drive/Thèse/EUREC4a/github/Input/Products/"
-path_to_sonde_profiles = os.path.join(dir_profile,"rad_profiles_all_sondes_ERA.nc")
+#dir_profile = "/media/ludo/DATA/google-drive/Thèse/EUREC4a/github/Input/Products/"
+#path_to_sonde_profiles = os.path.join(dir_profile,"rad_profiles_all_sondes_ERA.nc")
+
+dir_profile = "../output/rad_profiles"
+path_to_sonde_profiles = os.path.join(dir_profile,"rad_profiles.nc")
 
 sonde_profiles = xr.open_dataset(path_to_sonde_profiles)
 

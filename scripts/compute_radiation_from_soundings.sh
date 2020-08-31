@@ -19,18 +19,19 @@ ifile=/Users/bfildier/Data/EUREC4A/merged/sondes/all_sondes.nc
 odir=${wdir}/output/rad_profiles
 
 
-#- combine with ERA
-
 mkdir -p ${odir}
 
+#- combine with ERA
 python combine_ERA_and_sonde_profiles.py --sonde_file=${ifile} --out_dir=${odir} --ERA_dir=${ERAdir}
 
+#- compute radiative fluxes
 for ofile in `ls ${odir}/*.nc`; do
              echo 'Compute radiation profile '$ofile
              ${cdir}/sonde_radiation $ofile
              echo " "
    done
 
+#- calculate heating rates
 python post_processing.py --in_dir=${odir} --out_dir=$odir --comp_qrad=True
 
 #To compute the radiative heating itself, run instead
