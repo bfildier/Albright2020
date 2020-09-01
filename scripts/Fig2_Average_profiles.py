@@ -23,9 +23,14 @@ sns.set(context='notebook', style='whitegrid', palette='deep', font='sans-serif'
 #dir_profile = "/media/ludo/DATA/google-drive/Thèse/EUREC4a/github/Input/Products/"
 #path_to_sonde_profiles = os.path.join(dir_profile,"rad_profiles_all_sondes_ERA.nc")
 
-dir_profile = "/Users/annaleaalbright/Dropbox/EUREC4A/RadiativeProfiles/Data/"
-fp_rad_profiles = os.path.join(dir_profile, "rad_profiles_all_sondes_ERA.nc")
+#dir_profile = "/Users/annaleaalbright/Dropbox/EUREC4A/RadiativeProfiles/Data/"
+#fp_rad_profiles = os.path.join(dir_profile, "rad_profiles_all_sondes_ERA.nc")
+
+dir_profile = "../output/rad_profiles"
+fp_rad_profiles = os.path.join(dir_profile,"rad_profiles.nc")
+
 sonde_profiles = xr.open_dataset(fp_rad_profiles)
+
 
 def get_relative_humidity(profiles):
     
@@ -165,6 +170,6 @@ def plot_average_profiles(profiles):
     
     fig.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=None, hspace=None)
     
-    fig.savefig('/Users/annaleaalbright/Dropbox/EUREC4A/RadiativeProfiles/Figures/Paper_figures/Fig2_Average_profiles_edit.png')
+    fig.savefig('../figures/Fig2_Average_profiles.png')
     
 plot_average_profiles(sonde_profiles)

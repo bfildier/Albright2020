@@ -27,8 +27,11 @@ import matplotlib.cm as cmx
 matplotlib.rcParams.update({'font.size': 24})
 
 #Directory where sondes are stored
-dir_profile = "/media/ludo/DATA/google-drive/Thèse/EUREC4a/github/Input/Products/"
-path_to_sonde_profiles = os.path.join(dir_profile,"rad_profiles_all_sondes_ERA.nc")
+#dir_profile = "/media/ludo/DATA/google-drive/Thèse/EUREC4a/github/Input/Products/"
+#path_to_sonde_profiles = os.path.join(dir_profile,"rad_profiles_all_sondes_ERA.nc")
+
+dir_profile = "../output/rad_profiles"
+path_to_sonde_profiles = os.path.join(dir_profile,"rad_profiles.nc")
 
 sonde_profiles = xr.open_dataset(path_to_sonde_profiles)
 
@@ -65,13 +68,13 @@ def get_variables_day_to_day(profiles):
     return time, zlay, q_rad, q_rad_lw, q_rad_sw
 
 def plot_day_to_day(profiles):
-    
-    time, zlay, q_rad, q_rad_lw, q_rad_sw = get_variables_day_to_day(profiles)   
- 
-    dates_list = [date for date in time]    
-        
+
+    time, zlay, q_rad, q_rad_lw, q_rad_sw = get_variables_day_to_day(profiles)
+
+    dates_list = [date for date in time]
+
     fig, ax = plt.subplots(3,1,figsize=(20,30))
-    
+
     fig.subplots_adjust(left=0.1, bottom=0.2, right=0.9, top=0.9, wspace=0.2, hspace=0.2)
 
     pad=10
@@ -87,22 +90,22 @@ def plot_day_to_day(profiles):
 
     ymin=0
     ymax=10
-    
+
     colormap = matplotlib.cm.get_cmap("RdBu_r")
     val_min = -4
     val_max = 4
 
     zlay=zlay/1000
-    
+
     ax[0].pcolormesh(dates_list, zlay, q_rad_sw, cmap=colormap,vmin=val_min, vmax=val_max)
     ax[1].pcolormesh(dates_list, zlay, q_rad_lw, cmap=colormap,vmin=val_min, vmax=val_max)
     im = ax[2].pcolormesh(dates_list, zlay, q_rad, cmap=colormap,vmin=val_min, vmax=val_max)
 
     myFmt = mdates.DateFormatter('%m-%d')
-    
+
     ini = np.datetime64('2020-01-19 00:00:00')
     end = np.datetime64('2020-02-17 00:00:00')
-    
+
     for k in range(3):
         ax[k].xaxis.set_major_formatter(myFmt)
         ax[k].set_ylim([0,ymax])
@@ -112,14 +115,14 @@ def plot_day_to_day(profiles):
         ticks = ax[k].get_xticks()
         ax[k].set_xticks(np.linspace(ticks[0], ticks[-1], 10))
 
-    ax[0].tick_params(labelbottom=False)    
-    ax[1].tick_params(labelbottom=False)    
+    ax[0].tick_params(labelbottom=False)
+    ax[1].tick_params(labelbottom=False)
 
     x,y,w,h = ax[2].get_position().bounds
     c_map_ax = fig.add_axes([x, y-0.25*h, 1*w, 0.06*h])
     cbar = fig.colorbar(im,cax=c_map_ax, orientation="horizontal", extend="both")
     cbar.ax.set_xlabel('Heating Rate (K/day)',color='k') # cbar legend   
-    
-    fig.savefig('../Figures/Fig5_Day_to_day_variability.jpg')  
+
+    fig.savefig('../Figures/Fig5_Day_to_day_variability.jpg')
     
 plot_day_to_day(sonde_BCO)
