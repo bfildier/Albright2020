@@ -55,7 +55,6 @@ def combine_sonde_and_background(all_sondes_file, background_file, ERA_dir, delt
                                                    how="any")
         
         # minimum altitude to which radiosonde ascends, or from which dropsonde is released
-        #maybe add these three arguments to arg parse
         size = 10
         min_alt = 200
         max_alt = 3000
@@ -67,8 +66,6 @@ def combine_sonde_and_background(all_sondes_file, background_file, ERA_dir, delt
         else:
             
             #select the corresponding ERA file 
-            
-            #select lat, lon and date of the sonde
             lat = sonde.latitude.dropna(dim=alt_var).values[0]
             lon = sonde.longitude.dropna(dim=alt_var).values[0]
             if (lat > 20 or lat < 4 or lon < -65 or lon > -50):
@@ -88,7 +85,6 @@ def combine_sonde_and_background(all_sondes_file, background_file, ERA_dir, delt
                 level = q_ERA5_sel.level.values*hPaToPa       #we want the levels to be in Pa                                         
                                
                 #Select lat lon coordinates of the new grid
-                #Maybe the same for q, ta et SST? In this case, keep only one of the following
                 lon_coord_q = q_ERA5.longitude.values
                 lat_coord_q = q_ERA5.latitude.values
 
@@ -101,7 +97,6 @@ def combine_sonde_and_background(all_sondes_file, background_file, ERA_dir, delt
                 #Perform the interpolation
 
                 #Note in longitude, we add 360 to convert to the correct form
-
                 q_ERA5_interp = interpProfile(q_ERA5_sel.q.values,lat_coord_q,lon_coord_q,lat,lon+360)
                 ta_ERA5_interp = interpProfile(ta_ERA5_sel.ta.values,lat_coord_ta,lon_coord_ta,lat,lon+360)
                 SST_ERA5_interp = interpScalar(SST_ERA5_sel.sstk.values,lat_coord_SST,lon_coord_SST,lat,lon+360)
@@ -109,9 +104,7 @@ def combine_sonde_and_background(all_sondes_file, background_file, ERA_dir, delt
 
                 #convert specific humidity --> mass mixing ratio --> volume mixing ratio
                 q_ERA5_interp = (q_ERA5_interp / (1-q_ERA5_interp)) / epsilon # volume mixing ratio
-   
-                #Store in a Dataset
-                
+                   
                 ERA5_interp = xr.Dataset({'q': (['level'], q_ERA5_interp)},
                                          coords={'level': (['level'], level)})
                 
@@ -153,8 +146,6 @@ def combine_sonde_and_background(all_sondes_file, background_file, ERA_dir, delt
 
                 # Interface pressures: mostly the average of the two neighboring layer pressures
                 plev = np.append(np.append(back_plays_ERA.min(), 0.5 * (play[1:] + play[:-1])), play.max() + deltaP/2.)
-
-                # Hydrostatic interpolation for the altitude
                 
                 top_level = sonde.where(sonde[p_var]==sonde[p_var].min(), drop=True)
                 pres_top_sonde = top_level[p_var].values[0]
@@ -200,9 +191,6 @@ def combine_sonde_and_background(all_sondes_file, background_file, ERA_dir, delt
                                       "sw_dn"  :(["plev"], np.repeat(np.nan, plev.size)),\
                                       "sw_up"  :(["plev"], np.repeat(np.nan, plev.size)),\
                                       "sw_net" :(["plev"], np.repeat(np.nan, plev.size))})
-#                 #
-                # Add the other greenhouse gases
-                # AL, haven't interpolated this onto ERA grid
 
                 lowest = back_tropical_atm.p_lay.argmax()
                 back_on_p = back_tropical_atm.swap_dims({'lay':'p_lay'}).reset_coords() # Background sounding on pressure layers
@@ -223,7 +211,6 @@ def combine_sonde_and_background(all_sondes_file, background_file, ERA_dir, delt
 #functions to perform the interpolation
 
 def interpScalar(values,lat_coord,lon_coord,lat,lon):    
-    # We can think of changing option 'kind=' to something different than a linear interpolation
     return interp2d(lat_coord,lon_coord,values)(lat,lon)
 
 def interpProfile(values,lat_coord,lon_coord,lat,lon):
