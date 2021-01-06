@@ -19,12 +19,11 @@ PatohPa = 1 / 100                                       # Convert from Pa to hPa
 epsilon = 0.6223                                        # Ratio of molar mass of water to dry air
 CtoK    = 273.15                                        # Celsius to Kelvin
 gtokg   = 1.e-3                                         # g/kg to kg/kg
-co2     = 0.000414
-ghgs    = ["ch4", "n2o", "o3", "o2", "n2", "co"] # greenhouse gases
+ghgs    = ["co2", "ch4", "n2o", "o3", "o2", "n2", "co"] # greenhouse gases
 Rd=287
 g=9.8
 
-def combine_sonde_and_background(all_sondes_file, background_file, ERA_dir, deltaP=100, sfc_emis=.98, sfc_alb=0.07, mu0=1., ghgs=ghgs,co2=co2):
+def combine_sonde_and_background(all_sondes_file, background_file, ERA_dir, deltaP=100, sfc_emis=.98, sfc_alb=0.07, mu0=1., ghgs=ghgs):
 
     # Background sounding
     back_tropical_atm = xr.open_dataset(background_file)
@@ -49,18 +48,24 @@ def combine_sonde_and_background(all_sondes_file, background_file, ERA_dir, delt
         q_var = 'specific_humidity'
         t_var = 'temperature'
         #rh_var = 'relative_humidity'
-        
-        sonde = all_sondes.isel(launch_time = i).dropna(dim=alt_var,\
-                               subset=[alt_var, p_var,q_var,t_var],\
-                                                   how="any")
-        
+
         # minimum altitude to which radiosonde ascends, or from which dropsonde is released
         #maybe add these three arguments to arg parse
         size = 10
-        min_alt = 200
-        max_alt = 3000
+        min_alt = 40
+        # max_alt = 4000
+
+        # select sonde        
+        sonde = all_sondes.isel(launch_time = i)
+        # replace lowest values with nans
+        sonde[q_var].values[sonde[alt_var].values < min_alt] = np.nan
+        # drop nans
+        sonde = sonde.dropna(dim=alt_var,\
+                             subset=[alt_var, p_var,q_var,t_var],\
+                             how="any")
         
-        if (sonde[alt_var].values.size < size or sonde[alt_var].min() > min_alt or sonde[alt_var].max() < max_alt ):
+        # if (sonde[alt_var].values.size < size or sonde[alt_var].min() > min_alt or sonde[alt_var].max() < max_alt ):
+        if sonde[alt_var].values.size < size:
             print("The sonde is empty ")
             sonde.close()            
             
@@ -183,7 +188,9 @@ def combine_sonde_and_background(all_sondes_file, background_file, ERA_dir, delt
                 h2o = np.append(ERA5_interp.q.values, sonde[q_var].interp({p_var:sonde_plays}))
 
                 profile = xr.Dataset({"launch_time":([], sonde.launch_time),\
-                                      "platform":([], sonde.Platform.values),
+                                      "platform":([], sonde.Platform.values),\
+                                      "z_min":([],sonde[alt_var].min().values),\
+                                      "z_max":([],sonde[alt_var].max().values),\
                                       "tlay"   :(["play"], temp), \
                                       "play"   :(["play"], play), \
                                       "h2o":(["play"], h2o),  \
@@ -209,9 +216,6 @@ def combine_sonde_and_background(all_sondes_file, background_file, ERA_dir, delt
                 back_on_p = back_on_p.rename({'p_lay':'play'}) # Rename p_lay into play
                 for g in ghgs:
                     profile[g] = back_on_p["vmr_" + g].interp(play=play).fillna(back_tropical_atm["vmr_" + g].isel(lay=lowest))
-		
-		# set co2 manually
-                profile['co2'] = co2
 
                 back_tropical_atm.close()
                 sonde.close()

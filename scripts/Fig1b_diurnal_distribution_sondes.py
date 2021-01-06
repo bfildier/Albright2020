@@ -23,7 +23,8 @@ plt.rcParams.update({"font.size": 18})
 #dir_profile = "/Users/bfildier/Data/EUREC4A/merged/radiative_profiles"
 #path_to_rad_profiles = os.path.join(dir_profile, "rad_profiles_all_sondes_ERA.nc")
 
-dir_profile = "../output/rad_profiles"
+# dir_profile = "../output/rad_profiles"
+dir_profile = "../../EUREC4A_rad_profiles/output/perturbations/baseline"
 path_to_rad_profiles = os.path.join(dir_profile,"rad_profiles.nc")
 
 all_profiles = xr.open_dataset(path_to_rad_profiles)
@@ -138,7 +139,7 @@ ax.plot(
     linewidth=3,
     color="salmon",
     alpha=1,
-    label=f"{num_radiosondes} radiosondes",
+    label=f"Radiosondes",
 )
 ax.plot(
     time,
@@ -146,7 +147,7 @@ ax.plot(
     linewidth=3,
     color="navy",
     alpha=1,
-    label=f"{num_dropsondes} dropsondes",
+    label=f"Dropsondes",
 )
 myFmt = mdates.DateFormatter("%-H")
 ax.xaxis.set_major_formatter(myFmt)
