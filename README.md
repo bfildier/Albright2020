@@ -1,6 +1,9 @@
 # Albright2020
 Final code version for Albright et al. (2020), Atmospheric radiative profiles during EUREC4A, including scripts to compute radiative profiles and generate figures appearing in the article.
 
+Please see version 1.1 for an updated version at the time of publication.
+https://github.com/bfildier/Albright2020/tree/v1.1
+
 ## Merging of dropsonde and radiosonde data
 
 For convenience, the merging was done to generate radiative profiles for all soundings retrieved during EUREC4A. Use file all_sondes.nc to replicate, or use any sounding file with the same variable names.
